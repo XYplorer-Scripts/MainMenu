@@ -12,8 +12,8 @@
 ##
 ##
 ##    Author: TheQwerty
-##   Version: 1.0
-##      Date: 2013-08-27 T17:30Z;
+##   Version: 1.1
+##      Date: 2013-08-29 T16:00Z;
 ##  Requires: XY (Built against v12.80.0000.)
 ##############################################################################*/
 
@@ -470,7 +470,7 @@ Load '$scriptFile', 'showMenu', 'f';
   Status 'Generating custom toolbar button...',, 'progress';
   $scriptFile = Self('File');
   End ! $scriptFile, 'This requires the main script be saved to a file.';
-
+  $unresolvedIconPath = '<xypath>\<xyexe>';
   Snippet <<<#SNIPPET
 Snip: CTB 1
   XYplorer <xyver>, <date>
@@ -479,6 +479,7 @@ Action
 Name
   Show Menu
 Icon
+  $unresolvedIconPath
 ScriptL
   Load '$scriptFile', 'showMenu', 'f';
 ScriptR
@@ -489,7 +490,7 @@ FireClick
   1
 #SNIPPET;
   Status 'Custom Toolbar Button created.',, 'ready';
-  Unset $scriptFile;
+  Unset $scriptFile, $unresolvedIconPath;
 /**************************************************************END _createCTB */
 
 
