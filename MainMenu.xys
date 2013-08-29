@@ -1,0 +1,504 @@
+/*##############################################################################
+##  MainMenu.xys
+##
+##  This script file displays XYplorer's main menu.
+##
+##  By default it will use a permanent variable if the user has XY
+##  configured to retain them across sessions. Otherwise, it will create a
+##  folder "<xyscripts>\.config" and store them within file a there.
+##
+##  However there are tweaks in the script which allow you to force the use of
+##  an INI file and define its path.
+##
+##
+##    Author: TheQwerty
+##   Version: 1.0
+##      Date: 2013-08-27 T17:30Z;
+##  Requires: XY (Built against v12.80.0000.)
+##############################################################################*/
+
+
+/*******************************************************************************
+** User Tweaks
+*******************************************************************************/
+"User Tweaks||4 : _getTweaks"
+  Global $GT_FORCE_INI_USE = false;
+  // Set to 'true' to force the script to use an INI file for settings.
+  // This causes it to bypass checking if permanent variables are retained.
+  // Default: false
+
+  Global $GT_INI_FILE = "<xyscripts>\.config\TheQwertysScripts.ini";
+  // Set to the path to the INI settings file.
+  // Used when G_FORCE_INI_USE is true or permanent variables are not retained.
+  // Default: "<xyscripts>\.config\TheQwertysScripts.ini"
+
+  Global $GT_INI_SECTION = 'MAIN_MENU';
+  // Set to the INI file section.
+  // This allows you to have multiple scripts share an INI file.
+  // Default: 'MAIN_MENU'
+
+  Global $GT_UPDATE_MENU_ON_BETAS = false;
+  // Set to 'true' to force updating the menu data for beta versions.
+  // Default: false
+/**************************************************************END _getTweaks */
+
+
+"- : _-" //---------------------------------------------------------------------
+
+
+/*******************************************************************************
+** Initialize
+*******************************************************************************/
+"_Initialize"
+  Global $G_INITIALIZED;
+  if (! $G_INITIALIZED) {
+    Status 'Initializing script...',, 'progress';
+    Sub('_readOptions');
+  }
+  $G_INITIALIZED = true;
+/*************************************************************END _Initialize */
+
+
+/*******************************************************************************
+** Get Configuration
+**   Reads settings from permanent variables or INI file depending on
+**   circumstances.
+*******************************************************************************/
+"Get Configuration||4 : _readOptions"
+  Status 'Reading configuration...',, 'progress';
+
+  // Retrieve internal script tweaks.
+  Sub('_getTweaks');
+  Global $GT_INI_FILE, $GT_FORCE_INI_USE, $GT_INI_SECTION;
+
+  // Globals to retrieve...
+  Global $GS_LAST_MODIFIED;
+  // Options
+  Global $GS_MENU_TITLES, $GS_MENU_CMD_DATA_SPLITTER, $GS_MENU_CMD_LIST, $GS_XY_VERSION;
+
+  // Skip permanent variable check if user is forcing INI use.
+  if ($GT_FORCE_INI_USE) {
+    $ScriptRetainPVs = false;
+  } else {
+    $ScriptRetainPVs = GetKey('ScriptRetainPVs', 'Settings');
+  }
+
+  // Use permanent variables if the user has XY retain them.
+  if ($ScriptRetainPVs && IsSet($P_THEQWERTY_MAIN_MENU_LAST_MODIFIED)) {
+    Status 'Read configuration from permanent variables.',, 'progress';
+    $GS_LAST_MODIFIED = $P_THEQWERTY_MAIN_MENU_LAST_MODIFIED;
+
+    // Options
+    $GS_MENU_TITLES            = $P_THEQWERTY_MAIN_MENU_MENU_TITLES;
+    $GS_MENU_CMD_DATA_SPLITTER = $P_THEQWERTY_MAIN_MENU_MENU_CMD_DATA_SPLITTER;
+    $GS_MENU_CMD_LIST          = $P_THEQWERTY_MAIN_MENU_MENU_CMD_LIST;
+    $GS_XY_VERSION             = $P_THEQWERTY_MAIN_MENU_XY_VERSION;
+
+  // Use an INI file.
+  } else {
+    if (1 == Exists($GT_INI_FILE)) {
+      $iniOptions = GetKey('XY_Version', $GT_INI_SECTION, $GT_INI_FILE);
+      if ($iniOptions) {
+        Status 'Read configuration from INI file.',, 'progress';
+        $GS_LAST_MODIFIED = GetKey('LAST_MODIFIED', $GT_INI_SECTION, $GT_INI_FILE);
+
+        // Options
+        $GS_MENU_TITLES            = GetKey('Menu_Titles',            $GT_INI_SECTION, $GT_INI_FILE);
+        $GS_MENU_CMD_DATA_SPLITTER = GetKey('Menu_Cmd_Data_Splitter', $GT_INI_SECTION, $GT_INI_FILE);
+        $GS_MENU_CMD_LIST          = GetKey('Menu_Cmd_List',          $GT_INI_SECTION, $GT_INI_FILE);
+        $GS_XY_VERSION             = GetKey('XY_Version',             $GT_INI_SECTION, $GT_INI_FILE);
+
+        // Extra handling for INI files.
+        $GS_MENU_CMD_LIST = Replace($GS_MENU_CMD_LIST, '¶', "<crlf>");
+        $GS_MENU_CMD_LIST = Replace($GS_MENU_CMD_LIST, '&PILCROW;', '¶');
+      }
+      Unset $iniOptions;
+    }
+  }
+  Unset $ScriptRetainPVs;
+/************************************************************END _readOptions */
+
+
+/*******************************************************************************
+** Set Configuration
+**   Writes settings to permanent variables or INI file depending on
+**   circumstances.
+*******************************************************************************/
+"Set Configuration||4 : _setOptions"
+  Status 'Saving configuration...',, 'progress';
+
+  // Retrieve internal script tweaks.
+  Sub('_getTweaks');
+  Global $GT_INI_FILE, $GT_FORCE_INI_USE, $GT_INI_SECTION;
+
+  // Globals to store...
+  Global $GS_LAST_MODIFIED = Now('yyyy-mm-dd_hh.nn.ss');
+  // Options
+  Global $GS_MENU_TITLES, $GS_MENU_CMD_DATA_SPLITTER, $GS_MENU_CMD_LIST, $GS_XY_VERSION;
+
+  // Skip permanent variable check if user is forcing INI use.
+  if ($GT_FORCE_INI_USE) {
+    $ScriptRetainPVs = false;
+  } else {
+    $ScriptRetainPVs = GetKey('ScriptRetainPVs', 'Settings');
+  }
+
+  // Use permanent variables if the user has XY retain them.
+  if ($ScriptRetainPVs) {
+    Perm $P_THEQWERTY_MAIN_MENU_LAST_MODIFIED = $GS_LAST_MODIFIED;
+
+    // Options
+    Perm $P_THEQWERTY_MAIN_MENU_MENU_TITLES            = $GS_MENU_TITLES;
+    Perm $P_THEQWERTY_MAIN_MENU_MENU_CMD_DATA_SPLITTER = $GS_MENU_CMD_DATA_SPLITTER;
+    Perm $P_THEQWERTY_MAIN_MENU_MENU_CMD_LIST          = $GS_MENU_CMD_LIST;
+    Perm $P_THEQWERTY_MAIN_MENU_XY_VERSION             = $GS_XY_VERSION;
+    Status 'Saved configuration to permanent variable.',, 'progress';
+
+  // Use an INI file.
+  } else {
+    if (1 != Exists($GT_INI_FILE)) {
+      Status 'Creating INI file...',, 'progress';
+      New($GT_INI_FILE, 'file');
+    }
+
+    // Extra handling for INI files.
+    $cmdList = Replace($GS_MENU_CMD_LIST, '¶', '&PILCROW;');
+    $cmdList = Replace($cmdList, "<crlf>", '¶');
+
+    SetKey $GS_LAST_MODIFIED, 'LAST_MODIFIED', $GT_INI_SECTION, $GT_INI_FILE;
+
+    // Options
+    SetKey $GS_MENU_TITLES,            'Menu_Titles',            $GT_INI_SECTION, $GT_INI_FILE;
+    SetKey $GS_MENU_CMD_DATA_SPLITTER, 'Menu_Cmd_Data_Splitter', $GT_INI_SECTION, $GT_INI_FILE;
+    SetKey $cmdList,                   'Menu_Cmd_List',          $GT_INI_SECTION, $GT_INI_FILE, 1;
+    SetKey $GS_XY_VERSION,             'XY_Version',             $GT_INI_SECTION, $GT_INI_FILE;
+    Status 'Saved configuration to INI file.',, 'progress';
+
+    Unset $cmdList;
+  }
+  Unset $ScriptRetainPVs;
+/*************************************************************END _setOptions */
+
+
+"- : _-" //---------------------------------------------------------------------
+
+
+/*******************************************************************************
+** Retrieve Commands
+**   Walks user through copying the command list from Help > List All Commands
+**
+** OUTPUT VARIABLES:
+**   $G_CMD_LIST  The list data copied from Help > List All Commands.
+*******************************************************************************/
+"Retrieve Commands||4 : _getCommands"
+  Status 'Retrieving command list...',, 'progress';
+  Global $G_CMD_LIST;
+
+  Msg <<<#INSTRUCTIONS
+To recreate the menu this script needs some help from you.
+You will only be asked to do this once per stable release of XYplorer.
+
+When the List of All Commands Dialog appears:
+1) Right-click the list of commands.
+2) Select 'Copy All Items'.
+3) Close the List of All Commands dialog by clicking 'Cancel'.
+
+After this the text of your clipboard will be restored.
+#INSTRUCTIONS, 1;
+
+  $cb = "<clipboard>";
+  CopyText '';
+  Status "In 'List of All Commands' dialog: Right-Click > 'Copy All Items' then Cancel.",, 'progress';
+  #705; //List of Functions
+  $G_CMD_LIST = "<clipboard>";
+  CopyText $cb;
+  Status 'Clipboard restored.',, 'progress';
+  Unset $cb;
+
+  //If the user selects nothing then nothing is what they shall receive!
+  End $G_CMD_LIST == '', <<<#END_MSG
+It appears you didn't copy the items from the
+List of All Commands dialog.
+
+This script cannot continue without that information.
+#END_MSG;
+/************************************************************END _getCommands */
+
+
+/*******************************************************************************
+** Create Menu Data
+**   Parses the command list into the necessary lists.
+**   This  the main menu.
+**
+** OUTPUT VARIABLES:
+**   $GS_MENU_TITLES             List of top-level (main) menu items.
+**   $GS_MENU_CMD_DATA_SPLITTER  Separator between captions and command IDs
+**                                 in $GS_MENU_CMD_LIST.
+**   $GS_MENU_CMD_LIST           List of first-level menu items and command IDs.
+**   $GS_XY_VERSION              Current XY version.
+*******************************************************************************/
+"Create Menu Data||4 : _genMenuData"
+  Status 'Creating menu data....',, 'progress';
+  $ME = Self('Caption');
+
+  // Clear output variables.
+  Unset $GS_MENU_TITLES, $GS_MENU_CMD_DATA_SPLITTER, $GS_MENU_CMD_LIST, $GS_XY_VERSION;
+
+  // Get command list...
+  Global $G_CMD_LIST = '';
+  Sub('_getCommands');
+  End $G_CMD_LIST == '', "Error [$ME]: Command list is empty.";
+
+  // Used to separate the caption and command ID in the command list.
+  $__CMD_DATA_SPLITTER__ = "__CMD_DATA_SPLITTER__";
+
+  $cmdList = '';    // List of menu items.
+  $titleList = '';  // List of menu titles.
+
+  // Remove items that should be part of a submenu command.
+  $assigned = '';   // List of assigned accelerator keys.
+  $cSub = '';       // Name of the currently being processed submenu.
+  foreach ($line, $G_CMD_LIST, "<crlf>") {
+    if (! $line) { continue; }
+
+    // Description
+    $des = GetToken($line, 2, "<tab>", 't', 2);
+
+    // Continue if we're within a submenu.
+    if ($des Like "$cSub | *") { continue; }
+    $cSub = '';
+
+    // Start a new submenu.
+    if ($des LikeI '*- submenu -*') {
+      $cSub = RegexReplace($des, ' \| - submenu -.*?$');
+    }
+
+    // Command ID
+    $cid = GetToken($line, 1, "<tab>", 't');
+    $cid = SubStr($cid, 1);
+
+    // Caption (from Command ID)
+    $caption = Get('MenuCaption', $cid, 1);
+
+    // Menu Title (from Description)
+    $title = GetToken($des, 1, ' | ', 't', 1);
+
+    // Add to our list of menu titles.
+    if (Replace("|$titleList|", '&') UnLike "*|$title|*") {
+      // Currently there is no easy way to retrieve the localized caption with
+      // accelerator keys for the menu titles, so instead we'll just lazily
+      // attempt to assign them to the first free letter in the caption.
+
+      // Ensure we don't add a second accelerator if it already has one.
+      // We do this by checking for an odd number of '&'s.
+      $ampCount = GetToken(RegexMatches($title, '&', '|'), 'Count', '|');
+
+      if ($ampCount == 0 || $ampCount % 2 != 0) {
+        $i = 0;
+        $len = StrLen($title);
+
+        // Locate a character we can make the accelerator.
+        while ($i < $len) {
+          $char = SubStr($title, $i, 1);
+          $i++;
+
+          // We will cheat and only add them to [a-z].
+          if (! RegexMatches($char, '[a-z]')) { continue; }
+
+          // Avoid duplicates.
+          if ($assigned UnLikeI "*$char*") {
+            $assigned = $assigned . $char;
+            $title = Replace($title, $char, "&$char", 0, 1, 1);
+            break;
+          }
+        }
+        Unset $i, $len, $char;
+      }
+      // Build menu title list.
+      $titleList = $titleList . "|$title";
+    }
+
+    // Build command list.
+    $cmdList = $cmdList . GetToken($titleList, -1, '|') . " | $caption$__CMD_DATA_SPLITTER__$cid<crlf>";
+  }
+
+  Unset $assigned, $cSub, $line, $des, $cid, $caption, $title, $ampCount, $G_CMD_LIST;
+  $titleList = SubStr($titleList, 1); // Remove leading pipe.
+
+  // Transfer output data to global variables...
+  Global $GS_MENU_TITLES = $titleList;
+  End $GS_MENU_TITLES == '', "Error [$ME]: Failed to generate menu title list.";
+
+  Global $GS_MENU_CMD_DATA_SPLITTER = $__CMD_DATA_SPLITTER__;
+  End $GS_MENU_CMD_DATA_SPLITTER == '', "Error [$ME]: Failed to generate command / data splitter.";
+
+  Global $GS_MENU_CMD_LIST = $cmdList;
+  End $GS_MENU_CMD_LIST == '', "Error [$ME]: Failed to generate command list.";
+
+  Global $GS_XY_VERSION = "<xyver>";
+  End $GS_XY_VERSION == '', "Error [$ME]: Failed to retrieve XYplorer version.";
+
+  Unset $__CMD_DATA_SPLITTER__, $cmdList, $titleList, $ME;
+/************************************************************END _genMenuData */
+
+
+/*******************************************************************************
+** Refresh Menu Data
+**   Checks to see if there is stored menu data and updates it if it is stale.
+*******************************************************************************/
+"Refresh Menu Data||4 : _refreshMenuData"
+  Status 'Checking freshness of menu data....',, 'progress';
+  Global $GS_MENU_TITLES, $GS_MENU_CMD_DATA_SPLITTER, $GS_MENU_CMD_LIST, $GS_XY_VERSION;
+
+  // If any of the data is missing force an update.
+  $update = $GS_MENU_TITLES == '';
+  $update = $update || $GS_MENU_CMD_DATA_SPLITTER == '';
+  $update = $update || $GS_MENU_CMD_LIST == '';
+  $update = $update || $GS_XY_VERSION == '';
+
+  // If all of the data is available check its freshness.
+  if (! $update) {
+    Global $GT_UPDATE_MENU_ON_BETAS;
+    if ($GT_UPDATE_MENU_ON_BETAS) {
+      $idx = -1; // Use the full version.
+    } else {
+      $idx = 2;  // Use the first two tokens.
+    }
+
+    $menuVer = GetToken($GS_XY_VERSION, $idx, '.', 't', 1);
+    $xyVer   = GetToken("<xyver>",     $idx, '.', 't', 1);
+
+    $update = $menuVer < $xyVer;
+    Unset $idx, $menuVer, $xyVer;
+  }
+
+  if ($update) {
+    Sub '_updateMenuData';
+  }
+  Unset $update;
+/********************************************************END _refreshMenuData */
+
+
+/*******************************************************************************
+** Update Menu Data
+**   Updates the stored menu data to match the current version of XYplorer.
+*******************************************************************************/
+"Update Menu Data : _updateMenuData"
+  Status 'Updating menu data...',, 'progress';
+  Sub '_genMenuData';
+  Sub '_setOptions';
+/*********************************************************END _updateMenuData */
+
+
+"- : _-" //---------------------------------------------------------------------
+
+
+/*******************************************************************************
+** Show Menu
+**   Shows the menu.
+*******************************************************************************/
+"Show Menu||1 : showMenu"
+  Status 'Preparing to show menu...',, 'progress';
+  $ME = Self('Caption');
+
+  // Ensure _Initialize was executed.
+  Sub '_Initialize';
+
+  // Ensure menu data is current.
+  Sub '_refreshMenuData';
+
+  // Ensure menu data is available.
+  Global $GS_MENU_TITLES;
+  End $GS_MENU_TITLES == '', "Error [$ME]: Missing menu title list.";
+
+  Global $GS_MENU_CMD_DATA_SPLITTER;
+  End $GS_MENU_CMD_DATA_SPLITTER == '', "Error [$ME]: Missing command / data splitter.";
+
+  Global $GS_MENU_CMD_LIST;
+  End $GS_MENU_CMD_LIST == '', "Error [$ME]: Missing command list.";
+
+
+  // Show menu titles.
+  Status 'Showing menu titles...',, 'progress';
+  $response = PopUpMenu($GS_MENU_TITLES . '|-|-|&>>>',,,,,, '|');
+  End ! $response;
+
+  if ($response == '&>>>') {
+    Status 'Displaying script menu...',, 'progress';
+    Load '*', 'showMenu;_updateMenuData;-;_createCallerScript;_createCTB;-;_toggleMenu';
+  } else {
+    // Filter the command list based on user's title selection.
+    $list = FormatList($GS_MENU_CMD_LIST, 'f', "<crlf>", "$response | *");
+    $list = RegexReplace($list, "^$response\s*\|\s*");
+
+    // Show title's corresponding menu.
+    Status 'Displaying menu...',,' progress';
+    $response = PopUpMenu($list,,,,,, "<crlf>", $GS_MENU_CMD_DATA_SPLITTER);
+    End ! $response;
+
+    Status "Executing #$response: " . Get('MenuCaption', $response, 2),, 'ready';
+    Load "#$response;",, 's';
+
+    Unset $response, $list, $ME;
+  }
+/****************************************************************END showMenu */
+
+
+/*******************************************************************************
+** Create Script to Show Menu
+**   Generates and displays a script that calls this script's main entry point.
+*******************************************************************************/
+"Create Script to Show Menu : _createCallerScript"
+  Status 'Generating calling script...',, 'progress';
+  $scriptFile = Self('File');
+  End ! $scriptFile, 'This requires the main script be saved to a file.';
+
+  Status 'Displaying calling script.',, 'ready';
+  Text <<<#SCRIPT
+Load '$scriptFile', 'showMenu', 'f';
+#SCRIPT, /*width*/, /*height*/, 'Script to Show Menu';
+
+  Unset $scriptFile;
+/*****************************************************END _createCallerScript */
+
+
+/*******************************************************************************
+** Create Custom Toolbar Button
+**   Creates a custom toolbar button for calling this script.
+*******************************************************************************/
+"Create Custom Toolbar Button : _createCTB"
+  Status 'Generating custom toolbar button...',, 'progress';
+  $scriptFile = Self('File');
+  End ! $scriptFile, 'This requires the main script be saved to a file.';
+
+  Snippet <<<#SNIPPET
+Snip: CTB 1
+  XYplorer <xyver>, <date>
+Action
+  NewUserButton
+Name
+  Show Menu
+Icon
+ScriptL
+  Load '$scriptFile', 'showMenu', 'f';
+ScriptR
+  "Update Menu Data" Load '$scriptFile', '_updateMenuData', 'f';
+  "Create Script to Show Menu" Load '$scriptFile', '_createCallerScript', 'f';
+  "Show/Hide Main Menu" Load '$scriptFile', '_toggleMenu', 'f';
+FireClick
+  1
+#SNIPPET;
+  Status 'Custom Toolbar Button created.',, 'ready';
+  Unset $scriptFile;
+/**************************************************************END _createCTB */
+
+
+/*******************************************************************************
+** Show/Hide Main Menu
+**   Toggles the display state of XYplorer's main menu.
+*******************************************************************************/
+"Show/Hide Main Menu : _toggleMenu"
+  Status 'Toggling main menu display....',, 'progress';
+  #1061; //Miscellaneous | General Functions | Show/Hide Main Menu
+  Status 'Toggled main menu display.',, 'ready';
+/*************************************************************END _toggleMenu */
