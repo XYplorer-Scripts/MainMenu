@@ -48,3 +48,6 @@ This script generates a menu nearly identical to XYplorer's main menu including 
     - Initial Release
 
 ----------
+
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/861c36b205f1ec13e212f8c900fd0813 "githalytics.com")](http://githalytics.com/XYplorer-Scripts/MainMenu)
