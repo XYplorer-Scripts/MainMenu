@@ -4,7 +4,7 @@
 
 This script generates a menu nearly identical to XYplorer's main menu including the localized translation and most accelerator keys thus allowing you to display the main menu anywhere that a script can be run, such as catalog entries, toolbar buttons, or even via a keyboard shortcut.
 
-![Showing the Menu](./.img/ShowMenu.png)&nbsp;![Additional Features](./.img/AdditionalFeatures.png)&nbsp;![Context Menu](./.img/ContextMenu.png)
+![Screenshot of the script's various menus.](./.img/Screenshots.png)
 
 #### Features
 + **Always Up-to-Date**
