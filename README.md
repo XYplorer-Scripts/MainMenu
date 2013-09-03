@@ -1,6 +1,6 @@
 # Main Menu in a Script
 
-**Provides the ability to display XYplorer's main menu wherever a script can be called.**
+**Provides the ability to display [XYplorer](http://xyplorer.com/index.php)'s main menu wherever a script can be called.**
 
 This script generates a menu nearly identical to XYplorer's main menu including the localized translation and most accelerator keys thus allowing you to display the main menu anywhere that a script can be run, such as catalog entries, toolbar buttons, or even via a keyboard shortcut.
 
@@ -41,6 +41,7 @@ This script generates a menu nearly identical to XYplorer's main menu including 
 #### Notes
 + Developed in response to this [wish](http://www.xyplorer.com/xyfc/viewtopic.php?p=89396#p89396).
 + Discussion [thread](http://www.xyplorer.com/xyfc/viewtopic.php?f=7&t=10135) in XYplorer's Forums.
++ Developed by [TheQwerty](https://github.com/TheQwerty) - [contact](http://www.xyplorer.com/xyfc/memberlist.php?mode=viewprofile&u=438) me.
 
 ----------
 
@@ -52,5 +53,8 @@ This script generates a menu nearly identical to XYplorer's main menu including 
 
 ----------
 
+
+_This is an unofficial script file for [XYplorer](http://xyplorer.com/index.php) - a power file manager for Windows.
+It has been released by a group of individuals under the collective organization name [XYplorer-Scripts](https://github.com/XYplorer-Scripts)._
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/861c36b205f1ec13e212f8c900fd0813 "githalytics.com")](http://githalytics.com/XYplorer-Scripts/MainMenu)
