@@ -28,6 +28,8 @@ This script generates a menu nearly identical to XYplorer's main menu including 
 #### Usage
 1. [Download](./MainMenu.xys?raw=true)
 2. Run
+3. Follow the prompts to generate the main menu.
+4. [Optional] Select _>>>_ and then _Create Custom Toolbar Button_ to add the script to your toolbar.
 
 #### Requires
 + XYplorer with scripting enabled.
@@ -38,6 +40,7 @@ This script generates a menu nearly identical to XYplorer's main menu including 
 
 #### Notes
 + Developed in response to this [wish](http://www.xyplorer.com/xyfc/viewtopic.php?p=89396#p89396).
++ Discussion [thread](http://www.xyplorer.com/xyfc/viewtopic.php?f=7&t=10135) in XYplorer's Forums.
 
 ----------
 
