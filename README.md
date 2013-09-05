@@ -1,3 +1,13 @@
+# This script is obsolete and the repository now only exists for historical purposes.
+
+As of version [12.80.0002](http://www.xyplorer.com/xyfc/viewtopic.php?p=91201#p91201) of XYplorer this script can be replaced with the following:
+
+    PopupMainMenu;
+
+----------
+
+----------
+
 # Main Menu in a Script
 
 **Provides the ability to display [XYplorer](http://xyplorer.com/index.php)'s main menu wherever a script can be called.**
