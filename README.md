@@ -66,5 +66,3 @@ This script generates a menu nearly identical to XYplorer's main menu including 
 
 _This is an unofficial script file for [XYplorer](http://xyplorer.com/index.php) - a powerful file manager for Windows.<br>
 It has been released by a group of individuals under the collective organization name [XYplorer-Scripts](https://github.com/XYplorer-Scripts)._
-
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/861c36b205f1ec13e212f8c900fd0813 "githalytics.com")](http://githalytics.com/XYplorer-Scripts/MainMenu)
